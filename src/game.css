@@ -1,0 +1,8 @@
+.game-label {
+    -fx-font-smoothing-type: lcd;
+    -fx-smooth: true;
+    -fx-font-family: 'Clear Sans Bold';
+    -fx-background-color: #6a5bee;
+    -fx-font-size: 56px;
+    -fx-text-fill: red;
+}
