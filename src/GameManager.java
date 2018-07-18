@@ -3,7 +3,6 @@ import javafx.scene.Group;
 import javafx.util.Duration;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -43,11 +42,7 @@ public class GameManager extends Group {
         Tile tile1 = Tile.newRandomTile();
         tile1.setLocation(new Location(0, 0));
 
-        Tile tile2 = Tile.newRandomTile();
-        tile2.setLocation(new Location(1, 0));
-
         gameGrid.put(tile1.getLocation(), tile1);
-        gameGrid.put(tile2.getLocation(), tile2);
         gameGrid.values().stream().filter(Objects::nonNull).forEach(board::addTile);
     }
 
