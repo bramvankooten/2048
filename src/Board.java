@@ -51,13 +51,14 @@ public class Board extends Group {
     private final GridOperator gridOperator;
     private final int gridWidth;
 
+    private final Overlay gameOverListener = new Overlay("Game over!", "", bTry, null, "game-overlay-over", "game-lblOver", false);
+
     public Board(GridOperator gridOperator) {
         this.gridOperator = gridOperator;
         gridWidth = CELL_SIZE * gridOperator.getGridSize() + BORDER_WIDTH * 2;
 
-        getChildren().add(vgame);
-        getChildren().add(gridGroup);
         createGrid();
+        getChildren().add(gridGroup);
 
         initGameProperties();
     }
@@ -87,14 +88,13 @@ public class Board extends Group {
         hBottom.setMinSize(gridWidth, gridWidth);
         hBottom.setPrefSize(gridWidth, gridWidth);
         hBottom.setMaxSize(gridWidth, gridWidth);
-        hBottom.toBack();
 
         // Clip hBottom to keep the dropshadow effects within the hBottom
         Rectangle rect = new Rectangle(gridWidth, gridWidth);
         hBottom.setClip(rect);
         hBottom.getChildren().add(gridGroup);
 
-        vgame.getChildren().add(hBottom);
+//        getChildren().add(hBottom);
     }
 
     public void addTile(Tile tile) {
@@ -146,7 +146,7 @@ public class Board extends Group {
         bTry.getStyleClass().add("game-button");
         bTry.setOnAction(e -> btnTryAgain());
 
-        gameOverProperty.addListener(new Overlay("Game over!", "", bTry, null, "game-overlay-over", "game-lblOver", false));
+        gameOverProperty.addListener(gameOverListener);
 
         layerOnProperty.addListener((ov, b, b1) -> {
             if (!b1) {

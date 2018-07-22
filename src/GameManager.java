@@ -14,9 +14,9 @@ import java.util.stream.Stream;
  */
 public class GameManager extends Group {
 
-    private static final Duration ANIMATION_EXISTING_TILE = Duration.millis(65);
-    private static final Duration ANIMATION_NEWLY_ADDED_TILE = Duration.millis(125);
-    private static final Duration ANIMATION_MERGED_TILE = Duration.millis(80);
+    private static final Duration ANIMATION_EXISTING_TILE = Duration.millis(55);
+    private static final Duration ANIMATION_NEWLY_ADDED_TILE = Duration.millis(100);
+    private static final Duration ANIMATION_MERGED_TILE = Duration.millis(70);
 
     private final int gridSize;
 
@@ -98,8 +98,6 @@ public class GameManager extends Group {
                 return;
             }
         }
-
-        board.setGameOver(true);
 
         mergedToBeRemoved.clear();
         ParallelTransition parallelTransition = new ParallelTransition();

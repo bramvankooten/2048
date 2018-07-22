@@ -24,7 +24,7 @@ public class Tile extends Label {
         this.value = value;
         this.merged = false;
         setText(value.toString());
-        getStyleClass().addAll("game-label");
+        getStyleClass().addAll("game-label", "game-tile-" + value);
     }
 
     public static Tile newRandomTile() {
@@ -61,9 +61,11 @@ public class Tile extends Label {
     }
 
     public void merge(Tile other) {
+        getStyleClass().remove("game-tile-" + value);
         this.value += other.getValue();
         setText(value.toString());
         merged = true;
+        getStyleClass().add("game-tile-" + value);
     }
 
     @Override
