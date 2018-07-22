@@ -20,7 +20,7 @@ public class Game2048 extends Application {
     public void start(Stage primaryStage) {
         primaryStage.setTitle("2048");
         GamePane root = new GamePane();
-        root.getChildren().add(new Board(null));
+        root.getChildren().add(new Board(new GridOperator()));
         Scene scene = new Scene(root);
         scene.getStylesheets().add("game.css");
         primaryStage.setScene(scene);

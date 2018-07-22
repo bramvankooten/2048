@@ -1,5 +1,10 @@
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -16,8 +21,18 @@ import javafx.scene.shape.Rectangle;
 public class Board extends Group {
     public static final int CELL_SIZE = 128;
     private static final int BORDER_WIDTH = 8;
+    private static final int TOP_HEIGHT = 92;
+    private static final int GAP_HEIGHT = 50;
 
-    private final Group gridGroup = new Group();
+    /**
+     * Properties
+     */
+    private final IntegerProperty gameScoreProperty = new SimpleIntegerProperty(0);
+    private final BooleanProperty gameOverProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty layerOnProperty = new SimpleBooleanProperty(false);
+    private final BooleanProperty resetGame = new SimpleBooleanProperty(false);
+    private final BooleanProperty clearGame = new SimpleBooleanProperty(false);
+
 
     private final HBox overlay = new HBox();
     private final VBox txtOverlay = new VBox(10);
@@ -31,12 +46,20 @@ public class Board extends Group {
     private final Button bRestore = new Button("Restore");
     private final Button bQuit = new Button("Quit");
 
+    private final VBox vgame = new VBox(0);
+    private final Group gridGroup = new Group();
     private final GridOperator gridOperator;
+    private final int gridWidth;
 
     public Board(GridOperator gridOperator) {
         this.gridOperator = gridOperator;
-        createGrid();
+        gridWidth = CELL_SIZE * gridOperator.getGridSize() + BORDER_WIDTH * 2;
+
+        getChildren().add(vgame);
         getChildren().add(gridGroup);
+        createGrid();
+
+        initGameProperties();
     }
 
     private Rectangle createCell(int i, int j) {
@@ -46,17 +69,32 @@ public class Board extends Group {
         cell.setStroke(Color.GRAY);
         cell.setArcHeight(arcSize);
         cell.setArcWidth(arcSize);
+        cell.getStyleClass().add("game-grid-cell");
         return cell;
     }
 
     private void createGrid() {
-        for (int i = 0; i < gridOperator.getGridSize(); i++) {
-            for (int j = 0; j < gridOperator.getGridSize(); j++) {
-                gridGroup.getChildren().add(createCell(i, j));
-            }
-        }
+        gridOperator.traverseGrid((i, j) -> {
+            gridGroup.getChildren().add(createCell(i, j));
+            return 0;
+        });
 
+        gridGroup.getStyleClass().add("game-grid");
         gridGroup.setManaged(false);
+
+        HBox hBottom = new HBox();
+        hBottom.getStyleClass().add("game-backGrid");
+        hBottom.setMinSize(gridWidth, gridWidth);
+        hBottom.setPrefSize(gridWidth, gridWidth);
+        hBottom.setMaxSize(gridWidth, gridWidth);
+        hBottom.toBack();
+
+        // Clip hBottom to keep the dropshadow effects within the hBottom
+        Rectangle rect = new Rectangle(gridWidth, gridWidth);
+        hBottom.setClip(rect);
+        hBottom.getChildren().add(gridGroup);
+
+        vgame.getChildren().add(hBottom);
     }
 
     public void addTile(Tile tile) {
@@ -90,6 +128,74 @@ public class Board extends Group {
         return gridGroup;
     }
 
+    private void initGameProperties() {
+
+        overlay.setMinSize(gridWidth, gridWidth);
+        overlay.setAlignment(Pos.CENTER);
+        //overlay.setTranslateY(TOP_HEIGHT + GAP_HEIGHT);
+
+        overlay.getChildren().setAll(txtOverlay);
+        txtOverlay.setAlignment(Pos.CENTER);
+
+        buttonsOverlay.setAlignment(Pos.CENTER);
+        //buttonsOverlay.setTranslateY(TOP_HEIGHT + GAP_HEIGHT + gridWidth / 2);
+        buttonsOverlay.setTranslateY(gridWidth / 2);
+        buttonsOverlay.setMinSize(gridWidth, gridWidth / 2);
+        buttonsOverlay.setSpacing(10);
+
+        bTry.getStyleClass().add("game-button");
+        bTry.setOnAction(e -> btnTryAgain());
+
+        gameOverProperty.addListener(new Overlay("Game over!", "", bTry, null, "game-overlay-over", "game-lblOver", false));
+
+        layerOnProperty.addListener((ov, b, b1) -> {
+            if (!b1) {
+                getChildren().removeAll(overlay, buttonsOverlay);
+                getParent().requestFocus();
+            } else {
+                buttonsOverlay.getChildren().get(0).requestFocus();
+            }
+        });
+    }
+    
+    private void btnTryAgain() {
+        doResetGame();
+    }
+
+    private void doResetGame() {
+        doClearGame();
+        resetGame.set(true);
+    }
+
+    private void doClearGame() {
+        gridGroup.getChildren().removeIf(c -> c instanceof Tile);
+        getChildren().removeAll(overlay, buttonsOverlay);
+
+        clearGame.set(false);
+        resetGame.set(false);
+        gameScoreProperty.set(0);
+        gameOverProperty.set(false);
+        layerOnProperty.set(false);
+
+        clearGame.set(true);
+    }
+
+    public BooleanProperty resetGameProperty() {
+        return resetGame;
+    }
+
+    public BooleanProperty clearGameProperty() {
+        return clearGame;
+    }
+
+    public BooleanProperty isLayerOn() {
+        return layerOnProperty;
+    }
+
+    public void setGameOver(boolean gameOver) {
+        gameOverProperty.set(gameOver);
+    }
+
     private class Overlay implements ChangeListener<Boolean> {
 
         private final Button btn1, btn2;
@@ -119,6 +225,10 @@ public class Board extends Group {
                 buttonsOverlay.getChildren().setAll(btn1);
                 if (btn2 != null) {
                     buttonsOverlay.getChildren().add(btn2);
+                }
+                if (!layerOnProperty.get()) {
+                    Board.this.getChildren().addAll(overlay, buttonsOverlay);
+                    layerOnProperty.set(true);
                 }
             }
         }

@@ -6,3 +6,47 @@
     -fx-font-size: 56px;
     -fx-text-fill: red;
 }
+
+.game-overlay {
+    -fx-font-size: 60px;
+    -fx-text-fill: #f9f6f2;
+    -fx-border-color: #f9f6f2;
+    -fx-border-width: 2;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+
+.game-lblPause, .game-lblOver, .game-lblQuit {
+    -fx-font-size: 60px;
+    -fx-text-fill: #776e65;
+}
+
+.game-overlay-over {
+    -fx-opacity: 0.6;
+    -fx-background-color: #f9f6f2;
+}
+
+.game-lblWarning {
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-text-fill: #f65e3b;
+}
+
+.game-backGrid {
+    -fx-background-color: #bbada0;
+    -fx-border-color: #bbada0;
+    -fx-border-width: 2;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+}
+.game-grid {
+    -fx-background-color: #bbada0;
+    -fx-background-radius: 3;
+    -fx-border-radius: 3;
+}
+.game-grid-cell {
+    -fx-fill: #cdc1b4;
+    -fx-stroke-width: 14px;
+    -fx-stroke-type: centered;
+    -fx-stroke: #BBADA0;
+}

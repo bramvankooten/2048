@@ -32,6 +32,10 @@ public class Tile extends Label {
         return new Tile(value);
     }
 
+    public static Tile newTile(int value) {
+        return new Tile(value);
+    }
+
     public Integer getValue() {
         return value;
     }
